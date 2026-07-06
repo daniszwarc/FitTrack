@@ -1,11 +1,16 @@
 {
   "expo": {
-    "name": "fittrack-scaffold",
-    "slug": "fittrack-scaffold",
+    "name": "FitTrack",
+    "slug": "fittrack",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "fittrack",
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -15,11 +20,11 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+      }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     }
   }
 }
