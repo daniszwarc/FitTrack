@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, Pressable, ActivityIndicator, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
 import { supabase } from "@/lib/supabase";
@@ -32,68 +32,88 @@ export default function RegisterScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 justify-center bg-[#f8f7f4] px-6">
-      <Text className="mb-8 text-3xl font-bold text-[#2C2C2A]">
-        Crear cuenta
-      </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Crear cuenta</Text>
 
-      <Text className="mb-1 text-sm font-medium text-[#2C2C2A]">Nombre</Text>
-      <TextInput
-        value={name}
-        onChangeText={setName}
-        autoCapitalize="words"
-        placeholder="Tu nombre"
-        placeholderTextColor="#9CA3AF"
-        className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 text-[#2C2C2A]"
-      />
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="words"
+          placeholder="Tu nombre"
+          placeholderTextColor="#888780"
+          style={styles.input}
+        />
 
-      <Text className="mb-1 text-sm font-medium text-[#2C2C2A]">Email</Text>
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        autoComplete="email"
-        keyboardType="email-address"
-        placeholder="tu@email.com"
-        placeholderTextColor="#9CA3AF"
-        className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 text-[#2C2C2A]"
-      />
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          autoComplete="email"
+          keyboardType="email-address"
+          placeholder="tu@email.com"
+          placeholderTextColor="#888780"
+          style={styles.input}
+        />
 
-      <Text className="mb-1 text-sm font-medium text-[#2C2C2A]">Contraseña</Text>
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoCapitalize="none"
-        placeholder="••••••••"
-        placeholderTextColor="#9CA3AF"
-        className="mb-4 rounded-xl border border-gray-300 bg-white px-4 py-3 text-[#2C2C2A]"
-      />
+        <Text style={styles.label}>Contraseña</Text>
+        <TextInput
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+          placeholder="••••••••"
+          placeholderTextColor="#888780"
+          style={styles.input}
+        />
 
-      {error ? (
-        <Text className="mb-4 text-sm text-red-600">{error}</Text>
-      ) : null}
+        {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <Pressable
-        onPress={handleRegister}
-        disabled={loading}
-        className="mb-4 items-center rounded-xl bg-[#1D9E75] py-3"
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text className="text-base font-semibold text-white">Registrarse</Text>
-        )}
-      </Pressable>
-
-      <Link href="/(auth)/login" asChild>
-        <Pressable>
-          <Text className="text-center text-sm text-[#2C2C2A]">
-            ¿Ya tienes cuenta?{" "}
-            <Text className="font-semibold text-[#1D9E75]">Inicia sesión</Text>
-          </Text>
+        <Pressable onPress={handleRegister} disabled={loading} style={styles.primaryButton}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Registrarse</Text>
+          )}
         </Pressable>
-      </Link>
+
+        <Link href="/(auth)/login" asChild>
+          <Pressable>
+            <Text style={styles.linkText}>
+              ¿Ya tienes cuenta? <Text style={styles.linkTextAccent}>Inicia sesión</Text>
+            </Text>
+          </Pressable>
+        </Link>
+      </View>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, justifyContent: "center", backgroundColor: "#f8f7f4" },
+  content: { paddingHorizontal: 24 },
+  title: { fontSize: 28, fontWeight: "700", color: "#2C2C2A", marginBottom: 32 },
+  label: { fontSize: 14, fontWeight: "500", color: "#2C2C2A", marginBottom: 6 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#e8e7e1",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 14,
+    color: "#2C2C2A",
+    marginBottom: 20,
+  },
+  error: { marginBottom: 16, fontSize: 14, color: "#993C1D" },
+  primaryButton: {
+    alignItems: "center",
+    borderRadius: 12,
+    backgroundColor: "#1D9E75",
+    paddingVertical: 14,
+    marginBottom: 20,
+  },
+  primaryButtonText: { fontSize: 16, fontWeight: "600", color: "#ffffff" },
+  linkText: { textAlign: "center", fontSize: 14, color: "#2C2C2A" },
+  linkTextAccent: { fontWeight: "600", color: "#1D9E75" },
+});

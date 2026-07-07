@@ -300,6 +300,25 @@ export async function fetchProfile(userId: string): Promise<Profile | null> {
   return data;
 }
 
+export async function updateProfile(
+  userId: string,
+  input: {
+    full_name: string;
+    altura_cm: number;
+    peso_inicial_kg: number;
+    objetivo_kg: number;
+    fecha_nacimiento: string;
+    sexo?: "M" | "F";
+  }
+) {
+  const profileData = { id: userId, ...input };
+  console.log("Saving profile...", profileData);
+  const { error } = await supabase.from("profiles").upsert(profileData);
+  console.log("Profile result:", error);
+
+  if (error) throw error;
+}
+
 export async function fetchDashboardData(userId: string) {
   const [weight, measurement, food, walkMinutes] = await Promise.all([
     fetchLatestWeight(userId),

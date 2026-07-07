@@ -6,6 +6,7 @@ import {
   RefreshControl,
   ActivityIndicator,
   StyleSheet,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +20,16 @@ const TARGETS = {
   walkMinutes: 60,
 };
 
-const STAGES = [100, 95, 90, 88];
+function calcularEtapas(pesoActual: number, pesoObjetivo: number) {
+  const diferencia = pesoActual - pesoObjetivo;
+  const paso = diferencia / 4;
+  return [
+    Math.round((pesoActual - paso) * 2) / 2,
+    Math.round((pesoActual - paso * 2) * 2) / 2,
+    Math.round((pesoActual - paso * 3) * 2) / 2,
+    pesoObjetivo,
+  ];
+}
 
 function getWaistRisk(waistCm: number, alturaCm: number) {
   const ratio = waistCm / alturaCm;
@@ -99,6 +109,11 @@ export default function InicioScreen() {
   const hasWaist = data?.waistCm != null && profile?.altura_cm != null;
   const hasObjetivo = profile?.objetivo_kg != null;
 
+  const stages =
+    hasWeight && hasObjetivo
+      ? calcularEtapas(data!.weightKg!, profile!.objetivo_kg!)
+      : null;
+
   if (!user || isLoading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
@@ -167,44 +182,46 @@ export default function InicioScreen() {
         </View>
 
         {/* Progreso por etapas */}
-        <View style={styles.card}>
-          <SectionTitle>Progreso por etapas</SectionTitle>
-          <View style={styles.stagesList}>
-            {STAGES.map((stage, i) => (
-              <View
-                key={stage}
-                style={[
-                  styles.stageRow,
-                  i < STAGES.length - 1 && styles.stageRowSpacing,
-                ]}
-              >
+        {stages ? (
+          <View style={styles.card}>
+            <SectionTitle>Progreso por etapas</SectionTitle>
+            <View style={styles.stagesList}>
+              {stages.map((stage, i) => (
                 <View
+                  key={i}
                   style={[
-                    styles.stageCircle,
-                    {
-                      backgroundColor: i === 0 ? COLORS.tealSoft : COLORS.circleBg,
-                      borderColor: i === 0 ? COLORS.teal : COLORS.cardBorder,
-                      borderWidth: i === 0 ? 1.5 : 1,
-                    },
+                    styles.stageRow,
+                    i < stages.length - 1 && styles.stageRowSpacing,
                   ]}
                 >
-                  <Text
+                  <View
                     style={[
-                      styles.stageNumber,
-                      { color: i === 0 ? COLORS.teal : COLORS.textSecondary },
+                      styles.stageCircle,
+                      {
+                        backgroundColor: i === 0 ? COLORS.tealSoft : COLORS.circleBg,
+                        borderColor: i === 0 ? COLORS.teal : COLORS.cardBorder,
+                        borderWidth: i === 0 ? 1.5 : 1,
+                      },
                     ]}
                   >
-                    {i + 1}
-                  </Text>
+                    <Text
+                      style={[
+                        styles.stageNumber,
+                        { color: i === 0 ? COLORS.teal : COLORS.textSecondary },
+                      ]}
+                    >
+                      {i + 1}
+                    </Text>
+                  </View>
+                  <View style={styles.stageTextWrap}>
+                    <Text style={styles.stageWeight}>{stage} kg</Text>
+                    <Text style={styles.stageLabel}>Etapa {i + 1}</Text>
+                  </View>
                 </View>
-                <View style={styles.stageTextWrap}>
-                  <Text style={styles.stageWeight}>{stage} kg</Text>
-                  <Text style={styles.stageLabel}>Etapa {i + 1}</Text>
-                </View>
-              </View>
-            ))}
+              ))}
+            </View>
           </View>
-        </View>
+        ) : null}
 
         {/* Hoy */}
         <View style={styles.card}>
@@ -252,6 +269,13 @@ export default function InicioScreen() {
             />
           </View>
         </View>
+
+        <Pressable
+          onPress={() => supabase.auth.signOut()}
+          style={styles.logoutButton}
+        >
+          <Text style={styles.logoutButtonText}>Cerrar sesión</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -397,5 +421,15 @@ const styles = StyleSheet.create({
   trackFill: {
     height: "100%",
     borderRadius: 4,
+  },
+  logoutButton: {
+    marginTop: 4,
+    alignItems: "center",
+    paddingVertical: 12,
+  },
+  logoutButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#993C1D",
   },
 });
